@@ -1,52 +1,119 @@
 package com.sneha.usersignupsignin.controller;
 
-import com.sneha.usersignupsignin.dto.UserResponseDTO;
 import com.sneha.usersignupsignin.entity.User;
-import com.sneha.usersignupsignin.service.UserService;
+import com.sneha.usersignupsignin.payload.ApiResponse;
+import com.sneha.usersignupsignin.payload.Error;
+import com.sneha.usersignupsignin.payload.ServiceResponse;
+import com.sneha.usersignupsignin.record.RegisterUserRecord;
+import com.sneha.usersignupsignin.repository.UserRepository;
+import com.sneha.usersignupsignin.security.JwtHelper;
+import com.sneha.usersignupsignin.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+
 @RestController
+@RequestMapping("/user")
+
 public class HomeController {
 
     @Autowired
-    private UserService userService;
-    //Testing Purpose
-    @GetMapping("/")
-    public String home(){
-        return "Welcome to spring boot registration process";
-    }
+    private UserDetailsService userDetailsService;
 
+    @Autowired
+    private AuthenticationManager manager;
+
+    @Autowired
+    private JwtHelper helper;
+
+    @Autowired
+    private UserServiceImpl userServiceImpl;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/saveUser")
-    public ResponseEntity<String> saveUser(@RequestBody User user) {
-        User savedUser = userService.saveUser(user);
-        if (savedUser != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+    public ResponseEntity<ApiResponse> saveUser(@RequestBody RegisterUserRecord registerUserrecord){
+        ServiceResponse<String> response = userServiceImpl.registerUser(registerUserrecord);
+        if (response.getData() != null) {
+            return new ResponseEntity<>(new ApiResponse("success",response.getData(), null),
+                    HttpStatus.CREATED);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
-        }
-    }
-    @PostMapping("/login1")
-    public ResponseEntity<?> login1(@RequestParam String username, @RequestParam String password) {
-        User user = userService.login1(username, password);
-        if (user != null) {
-            UserResponseDTO responseDTO = new UserResponseDTO(user.getUserId(), user.getKey());
-            return ResponseEntity.ok(responseDTO);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+            return new ResponseEntity<>(new ApiResponse("error", null, new Error(response.getMessage())),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
+
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam Integer userId, @RequestParam String key) {
-        User user = userService.login(userId, key);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+    public ResponseEntity<ApiResponse> login(@RequestParam String userLoginId, @RequestParam String userLoginKey) {
+        Optional<User> userOptional= userRepository.findByUserLoginId(userLoginId);
+        if(userOptional.isEmpty()){
+            ApiResponse apiResponse = new ApiResponse("error",null,new Error("Email Id doesn't exist. Please, signup first!"));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
+
+        User existingUser = userOptional.get();
+        String storedEncodedKey = existingUser.getUserLoginkey();
+
+        boolean isSame = passwordEncoder.matches(userLoginKey, storedEncodedKey);
+        System.out.println(isSame);
+
+        if (isSame) {
+            this.doAuthenticate(userLoginId, userLoginKey);
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userLoginId);
+            String token = this.helper.generateToken(userDetails);
+
+            ApiResponse apiResponse = new ApiResponse("success",token,null);
+
+            return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+        }
+        ApiResponse apiResponse = new ApiResponse("error",null,new Error("Incorrect id or key. Please, try with correct credentials!"));
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/users")
+    public List<User> getUser() {
+        System.out.println("Getting users");
+        return userServiceImpl.getUsers();
+    }
+
+    private void doAuthenticate(String username, String password) {
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,
+                password);
+        try {
+            manager.authenticate(authentication);
+
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException(" Invalid Username or Password  !!");
+        }
+
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public String exceptionHandler() {
+        return "Credentials Invalid !!";
+    }
+
+    @GetMapping("/current-user")
+    public String getLoggedInUser(Principal principal) {
+        return principal.getName();
     }
 }

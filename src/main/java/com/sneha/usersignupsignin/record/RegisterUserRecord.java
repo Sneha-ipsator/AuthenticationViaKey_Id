@@ -1,17 +1,6 @@
-package com.sneha.usersignupsignin.dto;
+package com.sneha.usersignupsignin.record;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public record RegisterUserRecord(String name, String email, String password, Integer age) {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class RegisterUserDTO {
-    String name;
-    String email;
-    String password;
-    Integer age;
+
 }
