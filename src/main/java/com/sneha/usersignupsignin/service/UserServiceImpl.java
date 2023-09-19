@@ -23,13 +23,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServiceResponse<String> registerUser(RegisterUserRecord registerUserRecord) {
         Optional<User> existingUserOpt = userRepository.findByEmail(registerUserRecord.email());
-
         if(existingUserOpt.isPresent()) {
-
             ServiceResponse<String> response = new ServiceResponse<>(false, null,
                     "Email Id already exists.Try with a new one.");
             return response;
-
         }
 
         User newUser = new User();
@@ -45,8 +42,6 @@ public class UserServiceImpl implements UserService {
 
         ServiceResponse<String> response = new ServiceResponse<>(true,"Your User login Id: "+userLoginId +", and key: "+key,"Registration successful");
         return response;
-
-
 
     }
 

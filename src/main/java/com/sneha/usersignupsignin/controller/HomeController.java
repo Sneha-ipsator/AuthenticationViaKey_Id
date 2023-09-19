@@ -75,6 +75,7 @@ public class HomeController {
         boolean isSame = passwordEncoder.matches(userLoginKey, storedEncodedKey);
         System.out.println(isSame);
 
+
         if (isSame) {
             this.doAuthenticate(userLoginId, userLoginKey);
 
