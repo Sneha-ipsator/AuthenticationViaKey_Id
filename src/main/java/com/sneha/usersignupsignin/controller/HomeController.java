@@ -50,6 +50,7 @@ public class HomeController {
     public ResponseEntity<ApiResponse> saveUser(@RequestBody RegisterUserRecord registerUserrecord){
         ServiceResponse<String> response = userServiceImpl.registerUser(registerUserrecord);
         if (response.getData() != null) {
+
             return new ResponseEntity<>(new ApiResponse("success",response.getData(), null),
                     HttpStatus.CREATED);
         } else {
