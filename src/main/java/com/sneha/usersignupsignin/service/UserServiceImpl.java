@@ -1,6 +1,7 @@
 package com.sneha.usersignupsignin.service;
 
 import com.sneha.usersignupsignin.entity.User;
+import com.sneha.usersignupsignin.payload.IsValidResponse;
 import com.sneha.usersignupsignin.payload.ServiceResponse;
 import com.sneha.usersignupsignin.record.RegisterUserRecord;
 import com.sneha.usersignupsignin.repository.UserRepository;
@@ -34,7 +35,9 @@ public class UserServiceImpl implements UserService {
         newUser.setUserLoginId(userLoginId);
         newUser.setEmail(registerUserRecord.email());
         newUser.setName(registerUserRecord.name());
-        newUser.setPassword(registerUserRecord.password());
+        String rawPassword = registerUserRecord.password();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        newUser.setPassword(encodedPassword);
         String key = UUID.randomUUID().toString();
         newUser.setUserLoginkey(passwordEncoder.encode(key));
 
@@ -43,6 +46,27 @@ public class UserServiceImpl implements UserService {
         ServiceResponse<String> response = new ServiceResponse<>(true,"Your User login Id: "+userLoginId +", and key: "+key,"Registration successful");
         return response;
 
+    }
+
+
+    //Testing
+    public IsValidResponse isValidUser(String userLoginId, String userLoginKey) {
+        Optional<User> userOptional = userRepository.findByUserLoginId(userLoginId);
+        if(userOptional.isPresent())
+        {
+          User existingUser=userOptional.get();
+          boolean isEqual=passwordEncoder.matches(userLoginKey,existingUser.getUserLoginkey());
+          if(isEqual)
+          {
+            return new IsValidResponse(true,"Successful");
+          }
+          else{
+              return new IsValidResponse(false,"Invalid Key");
+          }
+        }
+        else{
+            return new IsValidResponse(false,"Invalid id");
+        }
     }
 
     @Override

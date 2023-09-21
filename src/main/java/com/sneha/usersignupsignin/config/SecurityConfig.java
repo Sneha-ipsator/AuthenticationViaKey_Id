@@ -1,8 +1,6 @@
 package com.sneha.usersignupsignin.config;
 
 
-import com.sneha.usersignupsignin.security.JwtAuthenticationEntryPoint;
-import com.sneha.usersignupsignin.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,15 +10,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
-    @Autowired
-    private JwtAuthenticationEntryPoint point;
-
-    @Autowired
-    private JwtAuthenticationFilter filter;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -32,13 +24,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         //configuration
-        http.csrf(csrf->csrf.disable())
-                .cors(cors->cors.disable())
-                .authorizeHttpRequests(auth->auth.requestMatchers("/user/saveUser","/user/login").permitAll().anyRequest().authenticated())
-                .exceptionHandling(ex->ex.authenticationEntryPoint(point))
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/saveUser","/user/users").permitAll().anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
 
     }
@@ -50,4 +39,5 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         return daoAuthenticationProvider;
     }
+
 }

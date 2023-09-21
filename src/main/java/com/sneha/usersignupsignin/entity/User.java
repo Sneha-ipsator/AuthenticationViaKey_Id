@@ -64,7 +64,3 @@ public class User implements UserDetails {
 }
 
 
-//Role based ,permission based
-
-//@AuthenticatedUser(to validate user)
-
