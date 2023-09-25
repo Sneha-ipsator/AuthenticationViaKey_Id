@@ -38,14 +38,14 @@ public class UserServiceImpl implements UserService {
         String rawPassword = registerUserRecord.password();
         String encodedPassword = passwordEncoder.encode(rawPassword);
         newUser.setPassword(encodedPassword);
+        newUser.setRole(registerUserRecord.role());
         String key = UUID.randomUUID().toString();
         newUser.setUserLoginkey(passwordEncoder.encode(key));
 
-        userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
 
         ServiceResponse<String> response = new ServiceResponse<>(true,"Your User login Id: "+userLoginId +", and key: "+key,"Registration successful");
         return response;
-
     }
 
 
@@ -54,17 +54,20 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository.findByUserLoginId(userLoginId);
         if(userOptional.isPresent())
         {
+
           User existingUser=userOptional.get();
           boolean isEqual=passwordEncoder.matches(userLoginKey,existingUser.getUserLoginkey());
           if(isEqual)
           {
-            return new IsValidResponse(true,"Successful");
+                System.out.println("Matches");
+                return new IsValidResponse(true,"Successful");
           }
           else{
               return new IsValidResponse(false,"Invalid Key");
           }
         }
         else{
+            System.out.println("User not Present");
             return new IsValidResponse(false,"Invalid id");
         }
     }
@@ -72,5 +75,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public User getUserByLoginId(String loginId) {
+        return userRepository.findByUserLoginId(loginId).orElse(new User());
     }
 }

@@ -11,6 +11,12 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
      public Optional<User> findByEmail(String email);
 
+
      Optional<User> findByUserLoginId(String userLoginId);
+
+     //Role based Authorization
+//     @Query("select u from User u where u.userLoginId= :userLoginId")
+//     Optional<User> findByUserLoginId(String userLoginId);
+
 
 }
