@@ -6,15 +6,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @Entity
-//@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
@@ -25,11 +27,16 @@ public class User implements UserDetails {
     private String  name;
     private String email;
     private String password;
+    private String role;
     private String userLoginkey;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        SimpleGrantedAuthority simpleGrantedAuthority= new SimpleGrantedAuthority(this.getRole());
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add(simpleGrantedAuthority);
+        return authorities;
     }
 
     @Override
@@ -51,7 +58,6 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
     @Override
     public boolean isEnabled() {
         return true;
