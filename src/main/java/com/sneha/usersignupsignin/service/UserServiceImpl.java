@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    //Testing
+    //Testing phase
     public IsValidResponse isValidUser(String userLoginId, String userLoginKey) {
         Optional<User> userOptional = userRepository.findByUserLoginId(userLoginId);
         if(userOptional.isPresent())
