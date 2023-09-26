@@ -23,7 +23,6 @@ public class PublicController {
     public ResponseEntity<ApiResponse> saveUser(@RequestBody RegisterUserRecord registerUserrecord){
         ServiceResponse<String> response = userServiceImpl.registerUser(registerUserrecord);
         if (response.getData() != null) {
-            //test commit
             return new ResponseEntity<>(new ApiResponse("success",response.getData(), null),
                     HttpStatus.CREATED);
         } else {

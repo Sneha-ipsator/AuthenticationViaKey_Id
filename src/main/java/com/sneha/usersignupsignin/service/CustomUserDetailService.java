@@ -19,9 +19,5 @@ public class CustomUserDetailService implements UserDetailsService {
         User user=userRepository.findByUserLoginId(username).orElseThrow(()->new RuntimeException("User not found !!"));
         //load user from database
         return user;
-
-        //Role based Authorization
-//        CustomUserDetails customUserDetails=new CustomUserDetails(user);
-//        return  customUserDetails;
     }
 }

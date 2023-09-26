@@ -23,25 +23,6 @@ public class HomeController {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
-//    @GetMapping("/users")
-//    public ResponseEntity<List<User>> getUser(@RequestParam String userLoginId, @RequestParam String userLoginKey) {
-//        System.out.println("Getting users");
-//        IsValidResponse isValidResponse = userServiceImpl.isValidUser(userLoginId, userLoginKey);
-//        if(isValidResponse.isSuccess()){
-//            return new ResponseEntity<>(userServiceImpl.getUsers(), HttpStatus.OK);
-//        }
-//        else{
-//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//        }
-//    }
-//
-//    @GetMapping("/current-user")
-//    public String getLoggedInUser(Principal principal) {
-//        return principal.getName();
-//    }
-
-
-//Testing
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {

@@ -37,7 +37,6 @@ public class User implements UserDetails {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add(simpleGrantedAuthority);
         return authorities;
-//        return List.of(simpleGrantedAuthority);
     }
 
     @Override

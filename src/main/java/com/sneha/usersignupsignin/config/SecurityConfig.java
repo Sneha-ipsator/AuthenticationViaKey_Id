@@ -46,8 +46,6 @@ public class SecurityConfig {
         return http.build();
 
     }
-   // requestMatchers("/user/**").hasRole("USER")
-    // requestMatchers("/admin/**").hasRole("ADMIN")
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();

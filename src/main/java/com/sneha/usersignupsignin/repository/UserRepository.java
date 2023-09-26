@@ -14,9 +14,4 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
      Optional<User> findByUserLoginId(String userLoginId);
 
-     //Role based Authorization
-//     @Query("select u from User u where u.userLoginId= :userLoginId")
-//     Optional<User> findByUserLoginId(String userLoginId);
-
-
 }
