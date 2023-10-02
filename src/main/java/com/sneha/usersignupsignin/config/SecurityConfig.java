@@ -1,6 +1,7 @@
 package com.sneha.usersignupsignin.config;
 
 import com.sneha.usersignupsignin.security.CustomAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,6 @@ public class SecurityConfig {
 
 
     @Bean
-
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         //configuration
@@ -43,6 +43,11 @@ public class SecurityConfig {
         });
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.exceptionHandling(exceptionHandling ->
+                exceptionHandling.authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: " + authException.getMessage());
+                })
+        );
         return http.build();
 
     }
