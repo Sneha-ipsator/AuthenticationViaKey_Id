@@ -1,9 +1,11 @@
 package com.sneha.usersignupsignin.service;
 
+import com.sneha.usersignupsignin.entity.Role;
 import com.sneha.usersignupsignin.entity.User;
 import com.sneha.usersignupsignin.payload.IsValidResponse;
 import com.sneha.usersignupsignin.payload.ServiceResponse;
 import com.sneha.usersignupsignin.record.RegisterUserRecord;
+import com.sneha.usersignupsignin.repository.RoleRepository;
 import com.sneha.usersignupsignin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +19,9 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -38,18 +43,22 @@ public class UserServiceImpl implements UserService {
         String rawPassword = registerUserRecord.password();
         String encodedPassword = passwordEncoder.encode(rawPassword);
         newUser.setPassword(encodedPassword);
-        newUser.setRole(registerUserRecord.role());
+
+        String roleName = registerUserRecord.role();
+            Role newRole = new Role();
+            newRole.setName(roleName);
+            Role savedRole = roleRepository.save(newRole);
+            newUser.getRoles().add(savedRole);
+
         String key = UUID.randomUUID().toString();
         newUser.setUserLoginkey(passwordEncoder.encode(key));
 
         User savedUser = userRepository.save(newUser);
-
         ServiceResponse<String> response = new ServiceResponse<>(true,"Your User login Id: "+userLoginId +", and key: "+key,"Registration successful");
         return response;
     }
 
 
-    //Testing phase
     public IsValidResponse isValidUser(String userLoginId, String userLoginKey) {
         Optional<User> userOptional = userRepository.findByUserLoginId(userLoginId);
         if(userOptional.isPresent())

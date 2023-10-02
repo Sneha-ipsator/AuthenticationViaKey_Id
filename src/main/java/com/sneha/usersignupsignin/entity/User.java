@@ -1,17 +1,12 @@
 package com.sneha.usersignupsignin.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -27,15 +22,22 @@ public class User implements UserDetails {
     private String  name;
     private String email;
     private String password;
+    @Transient
     private String role;
     private String userLoginkey;
+
+    @ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @JoinTable(name="users_roles",joinColumns=@JoinColumn(name="user_id"), inverseJoinColumns =@JoinColumn (name="role_id"))
+    private Set<Role> roles=new HashSet<>();
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority simpleGrantedAuthority= new SimpleGrantedAuthority(this.getRole());
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(simpleGrantedAuthority);
+        Set<Role> roles=this.getRoles();
+        List<SimpleGrantedAuthority>authorities=new ArrayList<>();
+        for(Role role :roles){
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
         return authorities;
     }
 
@@ -67,6 +69,7 @@ public class User implements UserDetails {
     public String getPassword() {
         return this.userLoginkey;
     }
+
 }
 
 

@@ -19,15 +19,24 @@ public class PublicController {
 
     @Autowired
     private UserServiceImpl userServiceImpl;
+
     @PostMapping("/saveUser")
     public ResponseEntity<ApiResponse> saveUser(@RequestBody RegisterUserRecord registerUserrecord){
-        ServiceResponse<String> response = userServiceImpl.registerUser(registerUserrecord);
-        if (response.getData() != null) {
-            return new ResponseEntity<>(new ApiResponse("success",response.getData(), null),
-                    HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(new ApiResponse("error", null, new Error(response.getMessage())),
+
+        try {
+            ServiceResponse<String> response = userServiceImpl.registerUser(registerUserrecord);
+
+            if (response.getSuccess()) {
+                return new ResponseEntity<>(new ApiResponse("success", response.getData(), null),
+                        HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(new ApiResponse("error", null, new Error(response.getMessage())),
+                        HttpStatus.CONFLICT); // Use HTTP status code 409 for conflict
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse("error", null, new Error(e.getMessage())),
                     HttpStatus.BAD_REQUEST);
         }
     }
+
 }

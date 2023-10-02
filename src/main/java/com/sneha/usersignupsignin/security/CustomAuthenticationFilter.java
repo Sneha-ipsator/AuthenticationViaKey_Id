@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,6 +22,7 @@ import java.io.IOException;
 
 @Component
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
+
 
     @Autowired
     private UserServiceImpl userServiceImpl;
@@ -31,43 +33,44 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserRepository userRepository;
+
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+            String requestUri = request.getRequestURI();
 
-        String requestUri = request.getRequestURI();
+            if (requestUri.startsWith("/public/")) {
+                filterChain.doFilter(request, response);
+            } else {
+                String userLoginId = request.getHeader("X-User-Login-Id");
+                String userLoginKey = request.getHeader("X-User-Login-Key");
+                System.out.println("Key : " + userLoginKey);
+                System.out.println("ID : " + userLoginId);
 
-        if(requestUri.startsWith("/public/")){
-            filterChain.doFilter(request, response);
-        }
+                try {
+                    this.doAuthenticate(userLoginId, userLoginKey);
+                    if (!userLoginId.isEmpty() && !userLoginKey.isEmpty()) {
+                        IsValidResponse isValidResponse = userServiceImpl.isValidUser(userLoginId, userLoginKey);
 
-        else{
-            String userLoginId = request.getHeader("X-User-Login-Id");
-            String userLoginKey = request.getHeader("X-User-Login-Key");
-            System.out.println("Key : " +userLoginKey );
-            System.out.println("ID : " +userLoginId );
+                        if (isValidResponse.isSuccess()) {
+                            System.out.println("Success");
+                            User userDetails = userServiceImpl.getUserByLoginId(userLoginId);
+                            System.out.println(userDetails);
+                            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        }
+                    }
 
-            System.out.println(userLoginId.isEmpty());
-            System.out.println(userLoginKey.isEmpty());
-            this.doAuthenticate(userLoginId,userLoginKey);
-            if (!userLoginId.isEmpty() && !userLoginKey.isEmpty()) {
-                IsValidResponse isValidResponse = userServiceImpl.isValidUser(userLoginId, userLoginKey);
-
-                if (isValidResponse.isSuccess()) {
-                    System.out.println("Success");
-                    User userDetails = userServiceImpl.getUserByLoginId(userLoginId);
-                    System.out.println(userDetails);
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    filterChain.doFilter(request, response);
+                }
+                catch (AuthenticationException e) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Unauthorized");
                 }
 
             }
-
-            filterChain.doFilter(request, response);
-        }
-
-
-
     }
 
     private void doAuthenticate(String userLoginId, String userLoginKey) {
