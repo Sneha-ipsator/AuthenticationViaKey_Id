@@ -20,6 +20,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * A custom authentication filter that handles authentication based on custom headers.
+ */
 @Component
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
@@ -73,6 +76,13 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             }
     }
 
+    /**
+     * Perform user authentication using the provided user login ID and key.
+     *
+     * @param userLoginId The user's login ID.
+     * @param userLoginKey The user's login key.
+     * @throws BadCredentialsException If authentication fails.
+     */
     private void doAuthenticate(String userLoginId, String userLoginKey) {
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userLoginId,userLoginKey);

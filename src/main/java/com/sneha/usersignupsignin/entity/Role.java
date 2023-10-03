@@ -3,6 +3,10 @@ package com.sneha.usersignupsignin.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+/**
+ * This class represents a user role in the system.
+ */
 @Getter
 @Setter
 @ToString

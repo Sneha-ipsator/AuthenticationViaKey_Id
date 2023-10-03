@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.List;
 
+/**
+ * This class defines the REST endpoints for user-related operations.
+ */
 @RestController
 //@PreAuthorize("hasRole('USER')")
 @RequestMapping("/user")
@@ -24,6 +27,11 @@ public class HomeController {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
+    /**
+     * Get a list of users.
+     *
+     * @return ResponseEntity containing a list of users or an error response.
+     */
 
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('USER')")
@@ -40,6 +48,12 @@ public class HomeController {
 
     }
 
+    /**
+     * Get the currently authenticated user's username.
+     *
+     * @param userDetails The Principal object containing user details.
+     * @return ResponseEntity containing the username or an error response.
+     */
     @GetMapping("/current-user")
     @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<String> getCurrentUser(Principal userDetails) {

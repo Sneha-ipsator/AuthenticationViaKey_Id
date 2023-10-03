@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
+/**
+ * This class represents a user entity in the system and implements the UserDetails interface for Spring Security.
+ */
 @Getter
 @Setter
 @ToString
@@ -36,8 +39,9 @@ public class User implements UserDetails {
         Set<Role> roles=this.getRoles();
         List<SimpleGrantedAuthority>authorities=new ArrayList<>();
         for(Role role :roles){
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getName()));
         }
+//        authorities.add(new SimpleGrantedAuthority())
         return authorities;
     }
 

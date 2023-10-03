@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * This class defines the REST endpoints for product-related operations.
+ */
+
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -21,8 +25,14 @@ public class ProductController {
     @Autowired
     ProductServiceImpl productServiceImpl;
 
+    /**
+     * Add a new product.
+     *
+     * @param productRecord The product record to be added.
+     * @return ResponseEntity indicating the success or failure of the operation.
+     */
     @PostMapping("/addProduct")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductRecord productRecord)
     {
         try{
@@ -40,8 +50,15 @@ public class ProductController {
         }
     }
 
+    /**
+     * Edit an existing product.
+     *
+     * @param productId    The ID of the product to be edited.
+     * @param productRecord The updated product record.
+     * @return ResponseEntity indicating the success or failure of the operation.
+     */
     @PutMapping("/editProduct")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
 
     public ResponseEntity<ApiResponse> editProduct(@RequestParam(name = "productId") Integer productId,@RequestBody ProductRecord productRecord) {
         try {
@@ -53,6 +70,12 @@ public class ProductController {
             return new ResponseEntity<>(new ApiResponse("error","An error occurred",null),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Get a list of products.
+     *
+     * @return ResponseEntity containing a list of products or an error response.
+     */
 
     @GetMapping("/getProducts")
     public ResponseEntity<List<Products>> getProducts() {

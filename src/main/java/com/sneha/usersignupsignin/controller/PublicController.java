@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * This class defines the REST endpoints for public user-related operations.
+ */
 @RestController
 @RequestMapping("/public")
 public class PublicController {
@@ -20,6 +23,12 @@ public class PublicController {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
+    /**
+     * Register a new user.
+     *
+     * @param registerUserrecord The user record to be registered.
+     * @return ResponseEntity indicating the success or failure of the registration.
+     */
     @PostMapping("/saveUser")
     public ResponseEntity<ApiResponse> saveUser(@RequestBody RegisterUserRecord registerUserrecord){
 

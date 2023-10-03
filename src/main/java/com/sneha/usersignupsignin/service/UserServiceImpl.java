@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service implementation for managing user-related operations.
+ */
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -26,6 +29,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Register a new user with the provided user registration record.
+     *
+     * @param registerUserRecord The record containing user registration information.
+     * @return A service response indicating the success or failure of the registration.
+     */
     @Override
     public ServiceResponse<String> registerUser(RegisterUserRecord registerUserRecord) {
         Optional<User> existingUserOpt = userRepository.findByEmail(registerUserRecord.email());
@@ -58,7 +67,13 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-
+    /**
+     * Check if a user with the provided login ID and key is valid.
+     *
+     * @param userLoginId The user's login ID.
+     * @param userLoginKey The user's login key.
+     * @return An `IsValidResponse` indicating the validity of the user.
+     */
     public IsValidResponse isValidUser(String userLoginId, String userLoginKey) {
         Optional<User> userOptional = userRepository.findByUserLoginId(userLoginId);
         if(userOptional.isPresent())
@@ -81,11 +96,22 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Get a list of all users.
+     *
+     * @return A list of user entities.
+     */
     @Override
     public List<User> getUsers() {
         return userRepository.findAll();
     }
 
+    /**
+     * Get a user by their login ID.
+     *
+     * @param loginId The login ID of the user to retrieve.
+     * @return The user entity with the specified login ID.
+     */
     @Override
     public User getUserByLoginId(String loginId) {
         return userRepository.findByUserLoginId(loginId).orElse(new User());
