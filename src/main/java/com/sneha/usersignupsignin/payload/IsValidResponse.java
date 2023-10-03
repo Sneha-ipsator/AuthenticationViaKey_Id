@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * This class represents a response indicating the validity of an operation or action.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

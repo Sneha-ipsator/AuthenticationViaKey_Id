@@ -7,7 +7,9 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+/**
+ * This class represents a product entity in the system.
+ */
 @Entity
 @Data
 @AllArgsConstructor

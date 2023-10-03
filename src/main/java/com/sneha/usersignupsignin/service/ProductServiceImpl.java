@@ -10,10 +10,20 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service implementation for managing products.
+ */
 @Service
 public class ProductServiceImpl implements ProductService{
     @Autowired
     private ProductRepository productRepository;
+
+    /**
+     * Add a new product.
+     *
+     * @param productRecord The record containing product information to add.
+     * @return A service response indicating the success or failure of the operation.
+     */
     @Override
     public ServiceResponse<String> addProduct(ProductRecord productRecord) {
         Optional<Products> existingProductOpt = productRepository.findByPname(productRecord.pname());
@@ -32,11 +42,23 @@ public class ProductServiceImpl implements ProductService{
         return  response;
     }
 
+    /**
+     * Get a list of all products.
+     *
+     * @return A list of products.
+     */
     @Override
     public List<Products> getProducts() {
         return productRepository.findAll();
     }
 
+    /**
+     * Update an existing product.
+     *
+     * @param productId The ID of the product to update.
+     * @param productRecord The record containing updated product information.
+     * @return A service response indicating the success or failure of the operation.
+     */
     @Override
     public ServiceResponse<String> updateProduct(Integer productId, ProductRecord productRecord) {
         try{

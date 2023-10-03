@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configuration class for defining security-related beans and configurations.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -31,7 +34,13 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationFilter customAuthenticationFilter;
 
-
+    /**
+     * Configure the security filter chain.
+     *
+     * @param http The HttpSecurity object to configure.
+     * @return The configured SecurityFilterChain.
+     * @throws Exception If an error occurs while configuring the filter chain.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -51,6 +60,12 @@ public class SecurityConfig {
         return http.build();
 
     }
+
+    /**
+     * Create a DaoAuthenticationProvider bean for authentication.
+     *
+     * @return An instance of DaoAuthenticationProvider.
+     */
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
@@ -58,6 +73,14 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         return daoAuthenticationProvider;
     }
+
+    /**
+     * Create an AuthenticationManager bean for handling authentication.
+     *
+     * @param builder The AuthenticationConfiguration builder.
+     * @return An instance of AuthenticationManager.
+     * @throws Exception If an error occurs while creating the authentication manager.
+     */
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
